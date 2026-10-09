@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L'entretien d'embauche raté</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;800&family=Caveat:wght@600&display=swap">
+<style>
+/* Layout : une croisière en escales — billet d'embarquement en haut, chaque partie de la fiche = une escale. Thème unique assumé (clair, plein soleil). */
+:root{
+  --ocean:#0b4f8a; --ocean-deep:#082f55; --lagoon:#17b3c6; --sun:#ffcc29; --buoy:#e5432d;
+  --foam:#eef9fb; --paper:#ffffff; --ink:#12304d; --muted:#4f6b82; --line:#cfe6ee;
+  --good:#1a9c5b; --good-bg:#e3f7ec; --bad:#c93a26; --bad-bg:#fde9e5;
+  --f-display:"Lilita One","Arial Rounded MT Bold","Trebuchet MS",sans-serif;
+  --f-body:"Nunito","Segoe UI",system-ui,sans-serif;
+  --f-hand:"Caveat","Comic Sans MS",cursive;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--foam);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:0 60px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;letter-spacing:.01em}
+a{color:var(--ocean)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+
+/* ---------- Bandeau score ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--ocean-deep);color:#fff;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px}
+.topbar .brand{font-family:var(--f-display);font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score{display:flex;align-items:center;gap:10px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.buoy{width:30px;height:30px;border-radius:50%;flex:none;
+  background:radial-gradient(circle,var(--ocean-deep) 0 34%,transparent 35%),
+  conic-gradient(var(--buoy) 0 12.5%,#fff 0 25%,var(--buoy) 0 37.5%,#fff 0 50%,var(--buoy) 0 62.5%,#fff 0 75%,var(--buoy) 0 87.5%,#fff 0)}
+.buoy.spin{animation:spin .8s ease}
+@keyframes spin{to{transform:rotate(360deg) scale(1.15)}}
+
+/* ---------- Hero ---------- */
+.hero{background:linear-gradient(180deg,#7fd6f0 0%,#bfeefa 55%,var(--lagoon) 55.2%,var(--ocean) 100%);
+  position:relative;overflow:hidden;padding:36px 16px 70px;color:var(--ink)}
+.sun{position:absolute;right:8%;top:22px;width:90px;height:90px;border-radius:50%;background:var(--sun);
+  box-shadow:0 0 0 14px rgba(255,204,41,.35),0 0 0 30px rgba(255,204,41,.15)}
+.hero-inner{max-width:860px;margin:0 auto;position:relative}
+.ticket{background:var(--paper);border-radius:18px;display:grid;grid-template-columns:1fr auto;max-width:640px;
+  box-shadow:0 14px 0 -6px rgba(8,47,85,.25);position:relative;transform:rotate(-1.2deg)}
+.ticket .main{padding:22px 24px;min-width:0}
+.ticket .stub{border-left:3px dashed var(--line);padding:22px 18px;display:flex;flex-direction:column;justify-content:center;
+  align-items:center;gap:6px;text-align:center;background:var(--sun);border-radius:0 18px 18px 0}
+.stub .lvl{font-family:var(--f-display);font-size:24px;line-height:1.05;color:var(--ocean-deep)}
+.topbar .who{font-weight:800;font-size:14px;opacity:.9;white-space:nowrap}
+/* Espace enseignant */
+.teach{background:var(--paper);border:2px dashed var(--ocean);border-radius:16px;padding:18px 20px;margin-top:44px;display:grid;gap:10px}
+.teach h3{font-size:22px;color:var(--ocean)}
+.teach .line{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.teach input{width:180px}
+.why{display:none}
+body.teacher .why:not([hidden]){display:block}
+.badge{background:var(--sun);color:var(--ocean-deep);border-radius:999px;padding:2px 10px;font-weight:800;font-size:13px}
+.stub small{font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:11px}
+.eyebrow{font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:var(--buoy)}
+.hero h1{font-size:clamp(34px,7vw,58px);line-height:1;color:var(--ocean-deep);margin:6px 0 10px}
+.hero h1 .strike{position:relative;display:inline-block}
+.hero h1 .strike::after{content:"";position:absolute;left:-4%;right:-4%;top:52%;height:7px;background:var(--buoy);
+  transform:rotate(-4deg);border-radius:4px}
+.hand{font-family:var(--f-hand);font-size:24px;color:var(--buoy);line-height:1.1}
+.ticket p{margin:8px 0 0;color:var(--muted)}
+.boat{position:absolute;right:4%;bottom:-6px;width:min(300px,45%);animation:bob 3.5s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(1deg)}}
+.waves{position:absolute;left:0;right:0;bottom:0;height:40px;
+  background:radial-gradient(circle at 20px -6px,transparent 22px,var(--foam) 23px) 0 0/40px 40px repeat-x}
+
+/* ---------- Vidéos ---------- */
+.cinema{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:-30px;position:relative}
+.vid{display:flex;align-items:center;gap:16px;background:var(--ocean-deep);color:#fff;text-decoration:none;
+  border-radius:16px;padding:18px 20px;border:3px solid var(--sun);transition:transform .15s}
+.vid:hover{transform:translateY(-3px) rotate(-.5deg)}
+.play{width:58px;height:58px;border-radius:50%;background:var(--buoy);flex:none;display:grid;place-items:center}
+.play::after{content:"";border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:5px}
+.vid b{font-family:var(--f-display);font-weight:400;font-size:22px;display:block;line-height:1.1}
+.vid span{font-size:14px;opacity:.85}
+.note{font-size:14px;color:var(--muted);margin:10px 4px 0}
+
+/* ---------- Escales ---------- */
+.stop{margin-top:44px}
+.stop-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.port{background:var(--sun);color:var(--ocean-deep);font-family:var(--f-display);font-size:15px;padding:6px 14px;
+  border-radius:999px;white-space:nowrap;border:2px solid var(--ocean-deep)}
+.stop-head h2{font-size:clamp(26px,5vw,36px);color:var(--ocean)}
+.lede{color:var(--muted);margin:-6px 0 16px;max-width:65ch}
+
+.q{background:var(--paper);border-radius:16px;padding:20px;margin-top:14px;border:2px solid var(--line)}
+.q h3{font-family:var(--f-body);font-weight:800;font-size:18px;margin-bottom:12px;display:flex;gap:10px;align-items:baseline}
+.num{font-family:var(--f-display);font-weight:400;color:#fff;background:var(--ocean);border-radius:8px;
+  min-width:30px;height:30px;display:inline-grid;place-items:center;font-size:16px;flex:none}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}
+.opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid var(--line);border-radius:12px;cursor:pointer;
+  background:var(--foam);transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--lagoon)}
+.opt input{accent-color:var(--ocean);width:20px;height:20px;flex:none;margin:0}
+.opt.good{border-color:var(--good);background:var(--good-bg)}
+.opt.bad{border-color:var(--bad);background:var(--bad-bg)}
+.opt.miss{border-style:dashed;border-color:var(--good)}
+
+select,input[type=text],textarea{font:inherit;color:var(--ink);background:var(--foam);border:2px solid var(--line);
+  border-radius:10px;padding:6px 10px;max-width:100%}
+select.good,input.good{border-color:var(--good);background:var(--good-bg)}
+select.bad,input.bad{border-color:var(--bad);background:var(--bad-bg)}
+textarea{width:100%;min-height:110px;resize:vertical}
+
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px}
+.btn{font-family:var(--f-display);font-size:17px;border:none;border-radius:999px;padding:9px 20px;cursor:pointer;
+  background:var(--ocean);color:#fff;box-shadow:0 4px 0 var(--ocean-deep);transition:transform .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ocean-deep)}
+.btn.ghost{background:var(--paper);color:var(--ocean);box-shadow:0 4px 0 var(--line);border:2px solid var(--line)}
+.fb{font-weight:800}
+.fb.ok{color:var(--good)} .fb.ko{color:var(--bad)}
+.why{width:100%;font-size:15px;color:var(--muted);margin:0}
+
+/* Annonce */
+.ad{background:var(--ocean);color:#fff;border-radius:6px;padding:20px 22px;max-width:560px;transform:rotate(.8deg);
+  box-shadow:6px 6px 0 var(--sun);font-size:16px}
+.ad h4{font-family:var(--f-display);font-weight:400;color:var(--sun);font-size:24px;margin:0 0 2px}
+.ad .urg{font-family:var(--f-display);font-size:18px;margin-bottom:8px}
+.ad p{margin:4px 0}
+.ad .send{color:var(--sun)}
+
+/* Rows (vocab / heures) */
+.rows{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:10px;align-items:center}
+.row > span{font-weight:800}
+.row select{width:100%}
+@media (max-width:560px){.row{grid-template-columns:1fr}}
+
+/* CV */
+.cv{display:grid;grid-template-columns:230px 1fr;border-radius:14px;overflow:hidden;border:2px solid var(--line);font-size:15px}
+.cv aside{background:var(--ocean-deep);color:#fff;padding:18px;display:grid;gap:14px;align-content:start}
+.cv aside .blk{display:grid;gap:4px}
+.cv main{padding:18px;display:grid;gap:14px;min-width:0;background:var(--paper)}
+.cv .name{background:var(--sun);margin:-18px -18px 0;padding:18px;font-family:var(--f-display);font-size:28px;color:var(--ocean-deep)}
+.cv .name div{font-family:var(--f-body);font-size:16px;font-weight:600;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.cv .sec select{font-weight:800}
+.cv aside select{background:#fff}
+.job{display:grid;grid-template-columns:90px 1fr;gap:10px}
+.job .d{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.job b{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.job p{margin:2px 0 0;color:var(--muted)}
+.cv select{padding:3px 6px;font-size:14px}
+@media (max-width:640px){.cv{grid-template-columns:1fr}.job{grid-template-columns:1fr}}
+.bank{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.bank span{border:2px dashed var(--lagoon);color:var(--ocean);border-radius:8px;padding:2px 10px;font-weight:800;font-size:15px}
+
+/* Oral */
+.oral{background:var(--buoy);color:#fff;border-radius:20px;padding:24px;display:grid;gap:10px}
+.oral h2{font-size:32px}
+.oral ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.oral .hand{color:var(--sun)}
+
+details{background:var(--paper);border:2px solid var(--line);border-radius:16px;margin-top:14px}
+summary{cursor:pointer;padding:16px 20px;font-family:var(--f-display);font-size:20px;color:var(--ocean)}
+.script{padding:0 20px 18px;font-size:15px}
+.script p{margin:4px 0}
+.script h4{font-family:var(--f-display);font-weight:400;font-size:19px;color:var(--buoy);margin:14px 0 6px}
+.script .na{font-style:italic;color:var(--muted)}
+
+.final{text-align:center;margin-top:44px;display:grid;gap:10px;justify-items:center}
+.big-btn{font-size:24px;padding:14px 32px;background:var(--buoy);box-shadow:0 5px 0 #9e2a1a}
+.q.q-ok{border-color:var(--good);background:linear-gradient(var(--good-bg),var(--paper) 60px)}
+.q.q-ko{border-color:var(--bad);background:linear-gradient(var(--bad-bg),var(--paper) 60px)}
+.final{background:var(--paper);border:3px solid var(--sun);border-radius:20px;padding:24px 16px}
+.final .big{font-family:var(--f-display);font-size:34px;color:var(--ocean)}
+footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="topbar">
+  <div class="brand">⚓ Bienvenue à bord <span class="who">· LEGER Isabelle</span></div>
+  <div class="score"><div class="buoy" id="buoy"></div><span><span id="pts">0</span> / <span id="tot">0</span> bouées</span></div>
+</div>
+
+<header class="hero">
+  <div class="sun"></div>
+  <div class="hero-inner">
+    <div class="ticket">
+      <div class="main">
+        <div class="eyebrow">Carte d'embarquement · Vidéo</div>
+        <h1>L'entretien d'embauche <span class="strike">raté</span></h1>
+        <div class="hand">Rendez-vous à 9h30… arrivée à midi !</div>
+        <p>Isabelle, DRH d'une grande compagnie maritime, doit recruter un animateur pour une croisière. Elle rencontre un candidat improbable : Rémy Pasquier, qui a tout raté sur terre et se dit qu'il aura peut-être plus de chance… sur mer !</p>
+      </div>
+      <div class="stub"><small>Professeure</small><div class="lvl">LEGER<br>Isabelle</div><small>Film :<br>Bienvenue à bord</small></div>
+    </div>
+  </div>
+  <svg class="boat" viewBox="0 0 300 130" aria-hidden="true">
+    <rect x="150" y="10" width="22" height="34" fill="#12304d"/><rect x="150" y="10" width="22" height="8" fill="#e5432d"/>
+    <rect x="70" y="40" width="170" height="26" rx="4" fill="#ffffff"/>
+    <g fill="#17b3c6"><circle cx="90" cy="53" r="5"/><circle cx="112" cy="53" r="5"/><circle cx="134" cy="53" r="5"/><circle cx="156" cy="53" r="5"/><circle cx="178" cy="53" r="5"/><circle cx="200" cy="53" r="5"/><circle cx="222" cy="53" r="5"/></g>
+    <path d="M20 66 H290 L262 112 H48 Z" fill="#ffffff"/><path d="M28 80 H284 L276 92 H36 Z" fill="#0b4f8a"/>
+    <circle cx="70" cy="98" r="9" fill="none" stroke="#e5432d" stroke-width="5"/>
+  </svg>
+  <div class="waves"></div>
+</header>
+
+<div class="wrap">
+
+  <section class="cinema" aria-label="Les extraits vidéo">
+    <a class="vid" href="https://www.lesfeesdufle.com/uploads/b/139391273-579666941990464642/bienvenue_%C3%A0_bord_lentretien_dembauche_montage_x0.85_759.mp4" target="_blank" rel="noopener">
+      <div class="play"></div><div><b>Extrait 1</b><span>L'entretien d'embauche · montage</span></div>
+    </a>
+  </section>
+  <p class="note">La vidéo s'ouvre dans un nouvel onglet. Réponds à toutes les questions, puis compte tes bouées 🛟 tout en bas !</p>
+
+  <!-- Escale 1 -->
+  <section class="stop">
+    <div class="stop-head"><span class="port">Escale 1</span><h2>On s'échauffe !</h2></div>
+    <p class="lede">Lis l'offre d'emploi parue dans les « Petites Annonces » d'un journal.</p>
+    <div class="ad">
+      <h4>Compagnie maritime recrute animateur</h4>
+      <div class="urg">URGENT : cherche animateur pour croisière</div>
+      <p>Référence : 974B8</p>
+      <p>Exp. indis. Poste à pourvoir de suite. Disponibilité longue durée. Motivé et parlant couramment l'anglais.</p>
+      <p class="send">Envoyer au plus vite CV et lettre de motivation à la DRH, Isabelle Arnoult.</p>
+    </div>
+    <div id="s1"></div>
+    <div class="q">
+      <h3><span class="num">2</span>À ton avis, quelles sont les qualités recherchées chez les candidats ? Quelles questions la DRH va-t-elle probablement leur poser ?</h3>
+      <textarea id="q2-libre" placeholder="Écris tes idées ici… (pas de correction automatique, on en parle en classe !)"></textarea>
+    </div>
+  </section>
+
+  <!-- Escale 2 -->
+  <section class="stop">
+    <div class="stop-head"><span class="port">Escale 2</span><h2>Vocabulaire</h2></div>
+    <div id="s2"></div>
+  </section>
+
+  <!-- Escale 3 -->
+  <section class="stop">
+    <div class="stop-head"><span class="port">Escale 3</span><h2>L'entretien de Paul Mondolini</h2></div>
+    <p class="lede">Regarde l'extrait, puis réponds aux questions.</p>
+    <div id="s3"></div>
+
+    <div class="q" data-block="cv">
+      <h3><span class="num">4</span>Complète le CV du candidat avec les mots de la liste.</h3>
+      <div class="bank" id="bank"></div>
+      <div class="cv">
+        <aside>
+          <div class="blk"><select data-ans="coordonnées" aria-label="Titre de la rubrique adresse"></select>
+            <div><b>ADRESSE</b><br>17, rue Océane, 75 007 Paris, France</div>
+            <div><b>E-MAIL</b><br>paul.mondolini@gmail.com</div>
+            <div><b>TÉLÉPHONE</b><br>06 51 51 00 99</div>
+          </div>
+          <div class="blk"><select data-ans="compétences" aria-label="Titre de la rubrique langues"></select>
+            <div>Anglais courant</div>
+            <div><select data-ans="allemand|espagnol" data-group="lang" aria-label="Langue 2"></select> courant</div>
+            <div><select data-ans="allemand|espagnol" data-group="lang" aria-label="Langue 3"></select> courant</div>
+            <div>Notions d' <select data-ans="italien" aria-label="Langue 4"></select></div>
+            <div><select data-ans="permis" aria-label="Document"></select> bateau</div>
+          </div>
+          <div class="blk"><select data-ans="loisirs" aria-label="Titre de la rubrique centres d'intérêt"></select>
+            <div>Plongée et natation<br>Tourisme maritime<br>Voyages internationaux</div>
+          </div>
+        </aside>
+        <main>
+          <div class="name">PAUL MONDOLINI<div><select data-ans="animateur" aria-label="Métier"></select> professionnel</div></div>
+          <div class="sec" style="display:flex;flex-wrap:wrap;gap:6px"><select data-ans="expériences" aria-label="Titre de section 1, mot 1"></select><select data-ans="professionnelles" aria-label="Titre de section 1, mot 2"></select></div>
+          <div class="job"><div class="d">sept. 2011<br>août 2008</div><div><b><select data-ans="chef" aria-label="Poste 1"></select> DE VILLAGE (TUNISIE) – CLUB MED</b><p>En charge du camp de vacances de Djerba La Douce, en Tunisie, j'ai coordonné l'ensemble des services et des activités : logement, restauration, offre loisirs, gestion de l'équipe d'animation.</p></div></div>
+          <div class="job"><div class="d">juil. 2008<br>juin 2006</div><div><b>ANIMATEUR SPORTIF (TUNISIE) – CLUB MED</b><p>Responsable des loisirs sportifs dans le camp de vacances de Djerba La Douce, j'ai organisé et animé les activités comme la plongée, la planche à voile et le ski nautique.</p></div></div>
+          <div class="job"><div class="d">mars 2006<br>août 2005</div><div><b><select data-ans="moniteur" aria-label="Poste 3"></select> DE PLONGÉE (FRANCE) – BLEU PASSION</b><p>Responsable des formations en plongée, j'ai donné des cours pour les niveaux <select data-ans="débutants" aria-label="Niveau 1"></select> ou <select data-ans="confirmés" aria-label="Niveau 2"></select></p></div></div>
+          <div class="sec"><select data-ans="formation" aria-label="Titre de section 2"></select></div>
+          <div class="job"><div class="d">sept. 2005<br>sept. 2003</div><div><b>BEES (BREVET D'ÉTAT D'ÉDUCATEUR SPORTIF)</b><p>Institut des sports de Marseille. Formation tout terrain à l'encadrement d'activités sportives auprès de publics enfants et adultes.</p></div></div>
+          <div class="job"><div class="d">2002</div><div><b>BACCALAURÉAT ES</b><p>Lycée Camille Pissarro, Paris. Section sportive (spécialisation en natation).</p></div></div>
+        </main>
+      </div>
+      <div class="actions"><span class="fb"></span></div>
+    </div>
+  </section>
+
+  <!-- Escale 4 -->
+  <section class="stop">
+    <div class="stop-head"><span class="port">Escale 4</span><h2>L'entretien de Rémy Pasquier</h2></div>
+    <div id="s4"></div>
+  </section>
+
+  <!-- Oral -->
+  <section class="stop">
+    <div class="oral">
+      <h2>À l'oral !</h2>
+      <ul>
+        <li>À ton avis, qui la DRH va-t-elle choisir pour le poste ?</li>
+        <li>Et toi ? Est-ce que tu donnerais une chance à Rémy Pasquier ? Pourquoi ?</li>
+      </ul>
+      <div class="hand">Vous avez reçu un nouveau message…</div>
+    </div>
+  </section>
+
+  <!-- Conclusion -->
+  <section class="stop">
+    <div class="stop-head"><span class="port">Escale finale</span><h2>Conclusion</h2></div>
+    <p class="lede">Regarde la suite avec ton professeur : « 10 minutes plus tard »…</p>
+    <div class="q">
+      <h3><span class="num">11</span>Comment expliques-tu que la DRH choisisse finalement Rémy Pasquier ?</h3>
+      <textarea id="conclu" placeholder="Imagine ce qui s'est passé pendant ces 10 minutes…"></textarea>
+    </div>
+  </section>
+
+  <div class="final">
+    <div class="hand">Tu as répondu à toutes les questions ?</div>
+    <button class="btn big-btn" id="countBtn">🛟 Compter mes bouées</button>
+    <div class="big" id="finalMsg">Prêt·e à compter tes bouées ?</div>
+    <button class="btn ghost" id="resetAll">Tout recommencer</button>
+  </div>
+
+  <section class="stop">
+    <details id="script" hidden>
+      <summary>Retranscription (corrigé enseignant)</summary>
+      <div class="script">
+        <h4>L'entretien de Paul Mondolini</h4>
+        <p>– J'ai enchaîné 5 ans au Club Med, j'encadrais d'abord les activités sportives et puis je suis très vite devenu chef de village à Djerba La Douce. Je sais parler couramment anglais, allemand, espagnol. J'ai des notions d'italien, bien sûr. Je suis moniteur de plongée, donc je peux organiser des sorties en mer pour débutants ou pour confirmés. Y a aucun souci, j'ai une formation totalement tout terrain. J'ai mon permis bateau, aussi. Je suis…</p>
+        <p>– Oui ?</p>
+        <p>– Non, non, faites comme si je n'étais pas là !</p>
+        <p>– Ça va être difficile… Vous êtes qui ?</p>
+        <p>– Je suis Rémy Pasquier. Je viens pour le poste de « URGENT : cherche animateur pour croisière. Exp. Indis. »</p>
+        <p>– Expérience indispensable.</p>
+        <p>– Expérience indispensable. Référence : 974B…</p>
+        <p>– Rémy Pasquier. On avait rendez-vous à 9h30. Il est… midi !</p>
+        <p>– Non mais je suis pas du tout du matin ! Terminez avec monsieur.</p>
+        <p>– Ouh ouh, Monsieur Pasquier ?! Je vais vous demander de bien vouloir attendre.</p>
+        <p>– Accordé. Mais vite ! Je déjeune toujours à l'heure sinon… je transite mal !</p>
+        <p>– Alors, Monsieur Mondolini, le poste est à pourvoir de suite. Vous pouvez prendre le vol de demain pour Miami ?</p>
+        <p>– Oui bien sûr, ouais !</p>
+        <p>– Bah c'est parfait ! Vous m'attendez 2 minutes dans le couloir ? J'en n'ai pas pour longtemps avec l'autre c… candidat.</p>
+        <h4>L'entretien de Rémy Pasquier</h4>
+        <p>– Alors M. Pasquier. Vous avez des expériences dans le domaine des loisirs ?</p>
+        <p>– Bien sûr oui, je fais du vélo… je bouquine… je bricole un peu.</p>
+        <p>– Oui, c'est bien, non non, je veux dire en professionnel.</p>
+        <p>– Pardon ?</p>
+        <p>– Vous avez déjà travaillé dans un centre de loisirs ?</p>
+        <p>– Non.</p>
+        <p>– Vous n'avez jamais été animateur ?</p>
+        <p>– Non.</p>
+        <p>– Vous parlez des langues étrangères ?</p>
+        <p>– Non. MAIS j'ai un curriculum vitae.</p>
+        <p class="na">Dans ma vie, j'avais vu tous les CV possibles et imaginables : des bidonnés, des mal orthographiés, des mal imprimés… TOUT ! Je n'avais jamais vu de CV SALE !</p>
+        <p>– C'est quoi ça, du café ? De la tomate ?</p>
+        <p>– Ah non, c'est du curry masala. Hier soir, Rajiv a fait son curry. C'était jeudi.</p>
+        <p>– Conducteur de camion benne… Chauffagiste… Réparateur de grappin de machine à attraper les montres, Foire du Trône, Paris.</p>
+        <p>– Mais tous ces métiers, c'est alimentaire. J'imagine que vous aussi vous êtes pas née en vous disant : « Tiens, plus tard je serai DRH, je ferai un métier chiant ».</p>
+        <p>– C'est vrai, vous avez raison. Quand j'avais 5 ans, je voulais être majorette.</p>
+        <p>– Y a des majorettes de 50 ans.</p>
+        <p>– Je vais en avoir 40…</p>
+        <p>– Mais, en fait… Mon vrai métier, c'est artiste.</p>
+        <p>– Ouais, bien sûr…</p>
+        <p>– Et comme ça n'a jamais marché pour moi sur Terre, je me suis dit que… sur mer !</p>
+        <p>– Bien sûr…</p>
+        <p>– Y a un théâtre sur le bateau ? Bah je peux vous faire un spectacle ! J'vais vous montrer !</p>
+        <p>– Non, écoutez, j'vais pas vous mentir, votre profil ne correspond pas du tout à…</p>
+        <p class="na">Vous avez reçu un nouveau message […]</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="teach" aria-label="Espace enseignant">
+    <h3>Espace enseignant</h3>
+    <div id="lockZone" class="line">
+      <label for="tcode">Code de correction :</label>
+      <input type="password" id="tcode" autocomplete="off">
+      <button class="btn" id="unlock">Déverrouiller</button>
+      <span class="fb" id="tmsg"></span>
+    </div>
+    <div id="openZone" class="line" hidden>
+      <span class="badge">Mode correction activé</span>
+      <button class="btn" id="revealAll">Afficher tout le corrigé</button>
+      <button class="btn ghost" id="lock">Verrouiller</button>
+    </div>
+    <div id="teachVid" class="cinema" style="margin-top:4px" hidden>
+      <a class="vid" id="vid2" href="#" target="_blank" rel="noopener">
+        <div class="play"></div><div><b>Extrait 2</b><span>10 minutes plus tard…</span></div>
+      </a>
+    </div>
+    <p class="why" style="display:block;margin:0">En mode correction : extrait 2 (« 10 minutes plus tard »), explications sous chaque exercice après le comptage, retranscription visible, et bouton pour afficher toutes les réponses.</p>
+  </section>
+
+  <footer>
+    Fiche d'origine : « L'entretien d'embauche raté », Alice Le Gall et Malika Reutlinger, Les Fées du FLE, 2021 — <a href="https://www.lesfeesdufle.com" target="_blank" rel="noopener">www.lesfeesdufle.com</a> — licence CC BY-NC.<br>
+    Extraits du film <i>Bienvenue à bord</i>. Version interactive adaptée pour la classe.
+  </footer>
+</div>
+
+<script>
+const QUIZ = {
+  s1: [
+    {id:"q1a", n:"1a", type:"radio", q:"Quel est le poste à pourvoir ?", opts:["Moniteur de plongée","Animateur pour une croisière","Capitaine de bateau","DRH"], ans:1,
+     why:"L'annonce dit : « cherche animateur pour croisière »."},
+    {id:"q1b", n:"1b", type:"radio", q:"Pour quand ?", opts:["Dans un mois","L'été prochain","Tout de suite"], ans:2,
+     why:"« URGENT » et « Poste à pourvoir de suite »."},
+    {id:"q1c", n:"1c", type:"radio", q:"Que signifie l'expression « exp. indis. » ?", opts:["Expédition indisponible","Expérience indispensable","Explication indiscrète"], ans:1,
+     why:"Exp. indis. = expérience indispensable : il faut déjà avoir travaillé dans ce domaine."}
+  ],
+  s2: [
+    {id:"q3", n:"3", type:"match", q:"Associe chaque mot à sa définition.",
+     rows:[["Un moniteur","Il enseigne un sport (ski, plongée…)."],
+           ["Un conducteur","Il conduit un véhicule."],
+           ["Un animateur","Il organise des jeux et des activités pour un groupe."],
+           ["Un permis de conduire","Le document officiel qui autorise à conduire."],
+           ["Une faute d'orthographe","Une erreur dans l'écriture d'un mot."],
+           ["Un centre de loisirs","Le lieu qui accueille les enfants pour des activités pendant les vacances."]]}
+  ],
+  s3: [
+    {id:"p1", n:"1", type:"check", q:"Quelles compétences possède Paul Mondolini ? (plusieurs réponses)",
+     opts:["Il sait conduire un bateau","Il est professeur de plongée","Il est formé aux premiers secours","Il a un bon niveau en ski nautique","Il parle couramment plusieurs langues","Il a été animateur en centre de loisirs"],
+     ans:[0,1,4], why:"Il dit : « J'ai mon permis bateau », « Je suis moniteur de plongée », « Je sais parler couramment anglais, allemand, espagnol ». Il ne parle pas de premiers secours ni de son niveau en ski nautique, et il a travaillé au Club Med, pas en centre de loisirs."},
+    {id:"p2", n:"2", type:"times", q:"À quelle heure Rémy Pasquier avait-il rendez-vous ? À quelle heure arrive-t-il ?",
+     rows:[["Il avait rendez-vous à…",["8h30","9h","9h30","10h"],"9h30"],["Il arrive à…",["10h30","11h","midi","14h"],"midi"]],
+     why:"« On avait rendez-vous à 9h30. Il est… midi ! »"},
+    {id:"p3a", n:"3a", type:"radio", q:"Quand Paul Mondolini doit-il partir pour le poste ?", opts:["Le lendemain","Le jour-même","La semaine suivante"], ans:0,
+     why:"« Vous pouvez prendre le vol de demain… ? »"},
+    {id:"p3b", n:"3b", type:"radio", q:"Où doit-il partir ?", opts:["À Barcelone","À Miami","À Rio de Janeiro"], ans:1,
+     why:"« …le vol de demain pour Miami ? »"}
+  ],
+  s4: [
+    {id:"r5", n:"5", type:"check", q:"Quels sont les loisirs de Rémy Pasquier ? (plusieurs réponses)",
+     opts:["Le jardinage","Le bricolage","La peinture","La lecture","Le vélo"], ans:[1,3,4],
+     why:"« Je fais du vélo… je bouquine (= je lis)… je bricole un peu. »"},
+    {id:"r6", n:"6", type:"radio", q:"Quel type de CV la DRH n'avait-elle jamais vu ?",
+     opts:["Tachés","Froissés","Mal imprimés","Déchirés","Mal orthographiés","Bidonnés"], ans:0,
+     why:"Elle avait déjà vu des CV bidonnés, mal orthographiés, mal imprimés… mais jamais de CV SALE : celui de Rémy est taché de curry masala !"},
+    {id:"r7", n:"7", type:"check", q:"Quels métiers Rémy a-t-il exercés par le passé ? (plusieurs réponses)",
+     opts:["Animateur en centre aéré","Maçon","Réparateur de machines","Agent d'entretien","Conducteur de camion","Chauffagiste","Caissier au supermarché","Promeneur de chiens"],
+     ans:[2,4,5], why:"Sur son CV : « Conducteur de camion benne… Chauffagiste… Réparateur de grappin de machine à attraper les montres ». Il n'a jamais été animateur."},
+    {id:"r8", n:"8", type:"text", q:"D'après Rémy, quel est son vrai talent et métier ?", ans:["artiste","un artiste","il est artiste","c'est artiste"],
+     why:"« Mon vrai métier, c'est artiste. »"},
+    {id:"r9", n:"9", type:"radio", q:"Pour le prouver, que propose-t-il de faire pendant l'entretien ?",
+     opts:["Un concert","Une démonstration de force","Un spectacle","De la danse"], ans:2,
+     why:"« Y a un théâtre sur le bateau ? Bah je peux vous faire un spectacle ! »"},
+    {id:"r10", n:"10", type:"radio", q:"Au final, son profil correspond-il au poste ?", opts:["Oui, parfaitement","Non, pas du tout"], ans:1,
+     why:"La DRH : « Votre profil ne correspond pas du tout à… » (pas d'expérience, pas d'animation, pas de langues étrangères)."}
+  ]
+};
+
+const CV_WORDS = ["allemand","espagnol","permis","loisirs","formation","professionnelles","italien","confirmés","animateur","moniteur","débutants","compétences","chef","expériences","coordonnées"];
+const YES = ["Embauché·e ! Bienvenue à bord !","Bravo, tu as le poste !","Parfait, le capitaine est fier de toi !","Cap sur la réussite !"];
+const NO  = ["Recalé·e… Retente ta chance !","Presque ! Encore un petit effort, moussaillon.","Oups, tu arrives à midi au lieu de 9h30 !"];
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[.!’']/g," ").replace(/\s+/g," ").trim();
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+let total = 0;
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function render(){
+  for(const [sec,list] of Object.entries(QUIZ)){
+    const host=document.getElementById(sec);
+    host.innerHTML=list.map(b=>{
+      let body="";
+      if(b.type==="radio"||b.type==="check"){
+        const t=b.type==="radio"?"radio":"checkbox";
+        body=`<div class="opts">${b.opts.map((o,i)=>`<label class="opt"><input type="${t}" name="${b.id}" id="${b.id}-${i}" value="${i}"><span>${esc(o)}</span></label>`).join("")}</div>`;
+      } else if(b.type==="match"){
+        const defs=shuffle(b.rows.map(r=>r[1]));
+        body=`<div class="rows">${b.rows.map((r,i)=>`<div class="row"><span>${esc(r[0])}</span><select id="${b.id}-${i}" data-ans="${esc(r[1])}" aria-label="${esc(r[0])}"><option value="">— choisir —</option>${defs.map(d=>`<option>${esc(d)}</option>`).join("")}</select></div>`).join("")}</div>`;
+      } else if(b.type==="times"){
+        body=`<div class="rows">${b.rows.map((r,i)=>`<div class="row"><span>${esc(r[0])}</span><select id="${b.id}-${i}" data-ans="${r[2]}" aria-label="${esc(r[0])}"><option value="">— heure —</option>${r[1].map(o=>`<option>${o}</option>`).join("")}</select></div>`).join("")}</div>`;
+      } else if(b.type==="text"){
+        body=`<input type="text" id="${b.id}-in" placeholder="Son vrai métier, c'est…" style="width:100%;max-width:420px">`;
+      }
+      return `<div class="q" data-block="${b.id}"><h3><span class="num">${b.n}</span><span>${esc(b.q)}</span></h3>${body}
+        <div class="actions"><span class="fb"></span><p class="why" hidden></p></div></div>`;
+    }).join("");
+    total+=list.length;
+  }
+  total+=1; // CV
+  document.getElementById("tot").textContent=total;
+  // CV selects
+  const sorted=CV_WORDS.slice().sort((a,b)=>a.localeCompare(b,"fr"));
+  document.getElementById("bank").innerHTML=sorted.map(w=>`<span>${w}</span>`).join("");
+  document.querySelectorAll('[data-block="cv"] select').forEach((s,i)=>{
+    s.id="cv-"+i;
+    s.innerHTML=`<option value="">…</option>`+sorted.map(w=>`<option>${w}</option>`).join("");
+  });
+}
+
+const findB = id => Object.values(QUIZ).flat().find(b=>b.id===id);
+
+// Note un exercice : vrai si tout est juste. Marque seulement la carte (pas les réponses).
+function check(id){
+  const box=document.querySelector(`[data-block="${id}"]`);
+  const fb=box.querySelector(".fb");
+  let ok=true;
+  if(id==="cv"){
+    const used={};
+    box.querySelectorAll("select").forEach(s=>{
+      const alts=s.dataset.ans.split("|");
+      let good=alts.includes(s.value);
+      if(good&&s.dataset.group){const k=s.dataset.group+":"+s.value;if(used[k])good=false;used[k]=1}
+      if(!good)ok=false;
+    });
+  } else {
+    const b=findB(id);
+    if(b.type==="radio"||b.type==="check"){
+      const ans=b.type==="radio"?[b.ans]:b.ans;
+      box.querySelectorAll(".opt").forEach((l,i)=>{if(l.querySelector("input").checked!==ans.includes(i))ok=false});
+    } else if(b.type==="match"||b.type==="times"){
+      box.querySelectorAll("select").forEach(s=>{if(s.value!==s.dataset.ans)ok=false});
+    } else if(b.type==="text"){
+      ok=b.ans.map(norm).includes(norm(box.querySelector("input").value));
+    }
+    const why=box.querySelector(".why");
+    if(b.why){why.textContent=b.why;why.hidden=false}
+  }
+  box.classList.toggle("q-ok",ok);box.classList.toggle("q-ko",!ok);
+  fb.textContent=ok?"🛟 Bouée gagnée !":"À revoir";
+  fb.className="fb "+(ok?"ok":"ko");
+  return ok;
+}
+
+function countAll(){
+  const ids=[...Object.values(QUIZ).flat().map(b=>b.id),"cv"];
+  const n=ids.filter(check).length;
+  document.getElementById("pts").textContent=n;
+  const buoy=document.getElementById("buoy");
+  buoy.classList.remove("spin");void buoy.offsetWidth;buoy.classList.add("spin");
+  const m=document.getElementById("finalMsg");
+  m.textContent = n===total ? `${total} bouées sur ${total} : tu es embauché·e comme animateur·rice !` :
+    n===0 ? `0 bouée sur ${total}… Comme Rémy, tu arrives à midi ! Retente ta chance.` :
+    `${n} bouée${n>1?"s":""} sur ${total}. ${n>=total*0.7?"Bravo, presque embauché·e !":"Les exercices « À revoir » t'attendent, moussaillon !"}`;
+}
+function updateScore(){
+  document.getElementById("pts").textContent="?";
+  document.getElementById("finalMsg").textContent="Prêt·e à compter tes bouées ?";
+}
+
+function clearBlock(box){
+  box.querySelectorAll("input[type=radio],input[type=checkbox]").forEach(i=>i.checked=false);
+  box.querySelectorAll("input[type=text]").forEach(i=>i.value="");
+  box.querySelectorAll("select").forEach(s=>s.value="");
+  box.querySelectorAll(".good,.bad,.miss").forEach(e=>e.classList.remove("good","bad","miss"));
+  const fb=box.querySelector(".fb");if(fb){fb.textContent="";fb.className="fb"}
+  const w=box.querySelector(".why");if(w)w.hidden=true;
+  box.classList.remove("q-ok","q-ko");
+}
+
+document.getElementById("countBtn").addEventListener("click",countAll);
+document.addEventListener("change",e=>{
+  const b=e.target.closest("[data-block]");
+  if(b){const fb=b.querySelector(".fb");fb.textContent="";fb.className="fb";b.classList.remove("q-ok","q-ko");
+    b.querySelectorAll(".good,.bad").forEach(x=>x.classList.remove("good","bad"));}
+});
+document.getElementById("resetAll").addEventListener("click",()=>{
+  document.querySelectorAll("[data-block]").forEach(clearBlock);
+  document.querySelectorAll("textarea").forEach(t=>t.value="");
+  updateScore();window.scrollTo({top:0,behavior:"smooth"});
+});
+
+// ---------- Mode enseignant ----------
+const CODE_HASH = 1329567236; // hachage du code
+const V2 = "==ANw1mL2QTOfVGbm9Vdk91cllTQlMzQlY2XzVGb4IUJykTJyUUJfJzX0lWYyRHel1SOBVyMDVCdhJ3Xlh2Y1FmYtVGZf5WZpRXZyRnblx2XvlTQlMzQlQWa29lMh9iM0YDN2QDM5kTM0kjN2YTO3UTLzcjMxkzM5MTMvI2LzRWYvxGc19SbvNmLlxmZ1R2clVmZzVGbuc3d39yL6MHc0RHa";
+function h(s){let x=5381;for(const c of s.trim().toUpperCase())x=((x*33)^c.charCodeAt(0))>>>0;return x}
+function setTeacher(on){
+  document.body.classList.toggle("teacher",on);
+  document.getElementById("lockZone").hidden=on;
+  document.getElementById("openZone").hidden=!on;
+  document.getElementById("script").hidden=!on;
+  document.getElementById("teachVid").hidden=!on;
+  const v=document.getElementById("vid2");
+  v.href = on ? atob(V2.split("").reverse().join("")) : "#";
+}
+document.getElementById("unlock").addEventListener("click",tryUnlock);
+document.getElementById("tcode").addEventListener("keydown",e=>{if(e.key==="Enter")tryUnlock()});
+function tryUnlock(){
+  const inp=document.getElementById("tcode"),m=document.getElementById("tmsg");
+  if(h(inp.value)===CODE_HASH){setTeacher(true);inp.value="";m.textContent=""}
+  else{m.textContent="Code incorrect.";m.className="fb ko"}
+}
+document.getElementById("lock").addEventListener("click",()=>{
+  setTeacher(false);
+  document.querySelectorAll("[data-block]").forEach(clearBlock);
+});
+document.getElementById("revealAll").addEventListener("click",()=>{
+  for(const b of Object.values(QUIZ).flat()){
+    const box=document.querySelector(`[data-block="${b.id}"]`);
+    if(b.type==="radio"||b.type==="check"){
+      const ans=b.type==="radio"?[b.ans]:b.ans;
+      box.querySelectorAll(".opt").forEach((l,i)=>{const on=ans.includes(i);l.querySelector("input").checked=on;l.classList.remove("good","bad","miss");if(on)l.classList.add("good")});
+    } else if(b.type==="match"||b.type==="times"){
+      box.querySelectorAll("select").forEach(s=>{s.value=s.dataset.ans;s.classList.add("good");s.classList.remove("bad")});
+    } else if(b.type==="text"){
+      const i=box.querySelector("input");i.value=b.ans[0];i.classList.add("good");i.classList.remove("bad");
+    }
+    const w=box.querySelector(".why");if(w&&b.why){w.textContent=b.why;w.hidden=false}
+    const fb=box.querySelector(".fb");fb.textContent="Corrigé";fb.className="fb ok";
+  }
+  const cv=document.querySelector('[data-block="cv"]');const seen={};
+  cv.querySelectorAll("select").forEach(s=>{const alts=s.dataset.ans.split("|");let v=alts[0];
+    if(s.dataset.group){v=alts.find(a=>!seen[a]);seen[v]=1}
+    s.value=v;s.classList.add("good");s.classList.remove("bad")});
+  const fb=cv.querySelector(".fb");fb.textContent="Corrigé";fb.className="fb ok";
+});
+
+render();
+updateScore();
+</script>
+
+</html>
